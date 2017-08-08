@@ -1,0 +1,10 @@
+# Created by .ignore support plugin (hsz.mobi)
+syntax: glob
+
+!gradle-wrapper.jar
+.gradletasknamecache
+
+/.gradle/
+/build/
+/out/
+/.idea/
