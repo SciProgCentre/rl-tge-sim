@@ -7,4 +7,4 @@ syntax: glob
 /.gradle/
 /build/
 /out/
-/.idea/
+.idea
