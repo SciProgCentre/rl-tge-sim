@@ -29,6 +29,11 @@ val freePath = 100.0
  */
 val volumeSize = 1000.0;
 
+/**
+ * Offset of photon birth point relative to electron interaction point
+ */
+val originOffset = 100.0
+
 
 //length in meters
 
@@ -82,8 +87,13 @@ val poisson = PoissonDistribution(rnd, multiplication, DEFAULT_EPSILON, DEFAULT_
 
 internal fun generatePhotons(point: Vector3D, field: Vector3D): List<Photon> {
     val numPhotons = poisson.sample();
+    /**
+     * Propagating origin point along the field
+     */
+    val originPoint = point.add(field.normalize().scalarMultiply(originOffset))
+
     return (1..numPhotons).map {
-        Photon(point, field.normalize())
+        Photon(originPoint, field.normalize())
     }
 }
 
@@ -116,13 +126,19 @@ internal fun nextGeneration(photons: List<Photon>): List<Photon> {
 fun main(vararg args: String) {
     var generation: List<Photon> = listOf(Photon(Vector3D(0.0, 0.0, volumeSize / 2), Vector3D(0.0, 0.0, -1.0)))
 
-    (1..15).forEach {
+    var i = 1;
+    var size = 0;
+
+    while (size < 1000){
         generation = nextGeneration(generation);
+        size = generation.size
+
         if (generation.isEmpty()) {
             println("No photons it the generation. Terminating.")
             return
         }
         val height = generation.stream().mapToDouble { it.origin.z }.average().orElse(Double.NaN)
-        println("There are ${generation.size} photons in generation $it. Average height is ${height}")
+        println("There are ${size} photons in generation $i. Average height is $height")
+        i++
     }
 }
