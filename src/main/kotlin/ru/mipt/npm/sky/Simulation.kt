@@ -1,6 +1,9 @@
 package ru.mipt.npm.sky
 
 import org.apache.commons.math3.distribution.ExponentialDistribution
+import org.apache.commons.math3.distribution.PoissonDistribution
+import org.apache.commons.math3.distribution.PoissonDistribution.DEFAULT_EPSILON
+import org.apache.commons.math3.distribution.PoissonDistribution.DEFAULT_MAX_ITERATIONS
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D
 import org.apache.commons.math3.random.JDKRandomGenerator
 import org.apache.commons.math3.random.RandomGenerator
@@ -10,6 +13,21 @@ import kotlin.streams.toList
 
 
 val rnd: RandomGenerator = SynchronizedRandomGenerator(JDKRandomGenerator())
+
+/**
+ * Average multiplication factor per cell
+ */
+val multiplication = 2.0
+
+/**
+ * Mean free path
+ */
+val freePath = 100.0
+
+/**
+ * The side of the volume cube
+ */
+val volumeSize = 1000.0;
 
 
 //length in meters
@@ -39,7 +57,7 @@ val randomField = RandomField(2.0);
 /**
  * Mean free path = 100 m
  */
-val exponential = ExponentialDistribution(100.0)
+val exponential = ExponentialDistribution(freePath)
 
 internal fun generateInteractionPoint(photon: Photon): Vector3D {
     val path = exponential.sample();
@@ -59,16 +77,15 @@ internal fun generateInteractionPoint(photon: Photon): Vector3D {
 //
 //val angleDistribution = getAngleDistribution(File("bremsstahlung.dat"));
 
-val numPhotons = 2
 
-internal fun generatePhotons(point: Vector3D): List<Photon> {
-    val field = randomField.fieldAt(point)
+val poisson = PoissonDistribution(rnd, multiplication, DEFAULT_EPSILON, DEFAULT_MAX_ITERATIONS)
+
+internal fun generatePhotons(point: Vector3D, field: Vector3D): List<Photon> {
+    val numPhotons = poisson.sample();
     return (1..numPhotons).map {
         Photon(point, field.normalize())
     }
 }
-
-val volumeSize = 1000.0;
 
 /**
  * Check that interaction point is inside the interacting volume
@@ -77,14 +94,19 @@ internal fun inVolume(point: Vector3D): Boolean {
     return Math.abs(point.x) <= volumeSize / 2 && Math.abs(point.y) <= volumeSize / 2 && Math.abs(point.z) <= volumeSize / 2;
 }
 
+internal fun isAllowedAngle(photon: Photon, field: Vector3D): Boolean {
+    return Vector3D.angle(photon.direction, field) < 2 * Math.PI / 3;
+}
+
 /**
  * Get next generation of photons.
  */
 internal fun nextGeneration(photons: List<Photon>): List<Photon> {
     return photons.stream().parallel().flatMap {
         val interactionPoint = generateInteractionPoint(it);
-        if (inVolume(interactionPoint)) {
-            generatePhotons(interactionPoint).stream()
+        val field = randomField.fieldAt(interactionPoint)
+        if (inVolume(interactionPoint) && isAllowedAngle(it, field)) {
+            generatePhotons(interactionPoint, field).stream()
         } else {
             Stream.empty()
         }
@@ -96,6 +118,11 @@ fun main(vararg args: String) {
 
     (1..15).forEach {
         generation = nextGeneration(generation);
-        println("There are ${generation.size} photons in generation $it")
+        if (generation.isEmpty()) {
+            println("No photons it the generation. Terminating.")
+            return
+        }
+        val height = generation.stream().mapToDouble { it.origin.z }.average().orElse(Double.NaN)
+        println("There are ${generation.size} photons in generation $it. Average height is ${height}")
     }
 }
