@@ -28,9 +28,10 @@ class SimpleAtmosphere(
     val photonFreePath: Double = 100.0,
     val cellLength: Double = 100.0,
     val cloudSize: Double = 1000.0,
-    fieldMagnitude: Double = 0.2
+    val fieldMagnitude: Double = 0.2,
+    override val rng: RandomGenerator = defaultGenerator
 ) : Atmosphere {
-    override val field: Field = RandomField(defaultGenerator, fieldMagnitude, cloudSize)
+    override val field: Field = RandomField(rng, fieldMagnitude, cloudSize)
 
     override fun Photon.interactionPoint(rng: RandomGenerator): Vector3D {
         val exponential = ExponentialDistribution(rng, photonFreePath)
