@@ -16,8 +16,11 @@ application {
 
 repositories {
     mavenCentral()
+    jcenter()
+    maven("https://kotlin.bintray.com/kotlinx")
     maven("https://dl.bintray.com/mipt-npm/scientifik/")
     maven("https://dl.bintray.com/mipt-npm/dataforge")
+    maven("https://dl.bintray.com/kotlin/ktor/")
 }
 
 dependencies {
@@ -26,6 +29,7 @@ dependencies {
     implementation("org.apache.commons:commons-math3:3.6.1")
     compile("commons-cli","commons-cli",  "1.4")
     compile("scientifik","plotlykt-core", "0.1.1")
+    compile("scientifik","plotlykt-server", "0.1.1")
     testImplementation(
         "junit:junit:4.12"
     )

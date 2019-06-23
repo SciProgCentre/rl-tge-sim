@@ -145,6 +145,28 @@ fun createOptins(): Options {
 
     )
 
+    options.addOption(
+        Option
+            .builder()
+            .longOpt("save-plot")
+            .hasArg(true)
+            .desc("save graph of simulation result in the html-file with given name")
+            .required(false)
+            .argName("FILENAME")
+            .build()
+
+    )
+
+    options.addOption(
+        Option
+            .builder()
+            .longOpt("dynamic-plot")
+            .desc("start server with dynamic plot")
+            .required(false)
+            .build()
+
+    )
+
     return options
 }
 
