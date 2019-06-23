@@ -30,7 +30,7 @@ fun main(args: Array<String>) {
             return
         }
 
-        temp2(cmd)
+        application(cmd)
 
     } catch (exp: ParseException) {
         println(exp)
@@ -56,11 +56,10 @@ fun startComputation(flow: Flow<Collection<Particle>>, collector : (index: Int, 
     }
 }
 
-fun temp2(cmd : CommandLine){
+fun application(cmd : CommandLine){
     val generator = getRandomGenerator(cmd)
     val atmosphere = getAtmosphere(cmd, generator)
     val limit = getLimitOfPhotons(cmd)
-
     val seed = getSeed(cmd, atmosphere)
 
     val flow = atmosphere.generate(generator, seed)
@@ -91,25 +90,4 @@ fun temp2(cmd : CommandLine){
 
 
 
-}
-
-fun temp() {
-    val atmosphere = SimpleAtmosphere()
-    val seed = Photon(Vector3D(0.0, 0.0, atmosphere.cloudSize / 2), Vector3D(0.0, 0.0, -1.0), 1.0)
-
-    val flow = atmosphere.generate(defaultGenerator, seed)
-    runBlocking {
-        var i = 1;
-        flow.onEach {generation->
-            if (generation.isEmpty()) {
-                println("No photons it the generation. Terminating.")
-            } else if (generation.size > 10000) {
-                println("Generation size is too large. Terminating")
-            }
-        }.takeWhile { it.size in (1..10000) }.collect { generation ->
-            val height = generation.map { it.origin.z }.average()
-            println("There are ${generation.size} photons in generation $i. Average height is $height")
-            i++
-        }
-    }
 }

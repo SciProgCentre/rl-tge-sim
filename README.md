@@ -28,3 +28,37 @@ For fast checking the potential of RL-TGE model, we considered a next simplified
 We could find the installed program in `./build/install/skysim/bin`
 
 ## Usage
+
+Print help:
+* For *nix: `./build/install/skysim/bin/skysim --help`
+* For Windwos: `TODO`
+    
+Help:
+```
+usage: skysim
+    --cell-length <NUMBER>       set the length of acceleration cell
+                                 (influence on birth point of new photon)
+    --cloud-size <NUMBER>        set the cloud size
+    --field-magnitude <NUMBER>   set the field magnitude
+    --free-path <NUMBER>         set the photon free mean path
+ -g,--gain <NUMBER>              set the local coefficient of gamma
+                                 multiplication
+ -h,--help                       print this message and exit
+ -l,--particle-limit <NUMBER>    set the upper limit of number of particle
+ -o,--output <FILENAME>          print simulation result in the file with
+                                 given name
+ -s,--seed <NUMBER>              set the random generator seed
+    --seed-photons <FILENAME>    set the path to file contains list of
+                                 seed photons in next format:
+                                 POSITION_X POSITION_Y POSITION_Z
+                                 DIRECTION_X DIRECTION_Y DIRECTION_Z
+                                 ENERGY NUMBER
+                                 POSITION_X POSITION_Y POSITION_Z
+                                 DIRECTION_X DIRECTION_Y DIRECTION_Z
+                                 ENERGY NUMBER
+                                 ...
+                                 by default using:
+                                 0.0 0.0 cloud-size/2 0.0 0.0 -1.0 1.0 1
+ -v,--version                    print information about version and exit
+
+```
