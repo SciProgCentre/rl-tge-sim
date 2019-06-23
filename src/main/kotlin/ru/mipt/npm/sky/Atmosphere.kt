@@ -39,6 +39,7 @@ interface Field {
 
 interface Atmosphere {
     val field: Field
+    val rng : RandomGenerator
 
     fun Photon.interactionPoint(rng: RandomGenerator = defaultGenerator): Vector3D
 
@@ -83,12 +84,17 @@ fun Atmosphere.nextGeneration(
 /**
  * Generate a flow of particle generations
  */
-fun Atmosphere.generate(rng: RandomGenerator, seed: Particle): Flow<Collection<Particle>> {
+fun Atmosphere.generate(rng: RandomGenerator, seed: Collection<Particle>): Flow<Collection<Particle>> {
     return flow {
-        var currentGeneration: Collection<Particle> = listOf(seed)
+        var currentGeneration: Collection<Particle> = seed
         while (!currentGeneration.isEmpty()) {
             emit(currentGeneration)
             currentGeneration = nextGeneration(rng, currentGeneration)
         }
     }
 }
+
+/**
+ * Generate a flow of particle generations
+ */
+fun Atmosphere.generate(rng: RandomGenerator, seed: Particle)= this.generate(rng, listOf(seed))

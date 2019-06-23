@@ -4,10 +4,12 @@ import org.apache.commons.cli.CommandLine
 import org.apache.commons.cli.DefaultParser
 import org.apache.commons.cli.Option
 import org.apache.commons.cli.Options
+import org.apache.commons.math3.geometry.euclidean.threed.Vector3D
 import org.apache.commons.math3.random.JDKRandomGenerator
 import org.apache.commons.math3.random.RandomGenerator
 import org.apache.commons.math3.random.SynchronizedRandomGenerator
 import java.lang.Exception
+import java.nio.file.Paths
 import kotlin.system.exitProcess
 
 fun createOptins(): Options {
@@ -123,6 +125,26 @@ fun createOptins(): Options {
 
 
     )
+    options.addOption(
+        Option
+            .builder()
+            .longOpt("seed-photons")
+            .hasArg(true)
+            .desc(("""
+                set the path to file contains list of seed photons in next format:
+                POSITION_X POSITION_Y POSITION_Z DIRECTION_X DIRECTION_Y DIRECTION_Z ENERGY NUMBER
+                POSITION_X POSITION_Y POSITION_Z DIRECTION_X DIRECTION_Y DIRECTION_Z ENERGY NUMBER
+                ...
+                by default using:
+                0.0 0.0 cloud-size/2 0.0 0.0 -1.0 1.0 1
+            """.trimIndent()))
+            .required(false)
+            .argName("FILENAME")
+            .build()
+
+
+    )
+
     return options
 }
 
@@ -134,7 +156,7 @@ fun parseError(exp: Exception, messege: String = "") {
     exitProcess(1)
 }
 
-fun getAtmosphere(cmd: CommandLine): SimpleAtmosphere {
+fun getAtmosphere(cmd: CommandLine, rng :RandomGenerator): SimpleAtmosphere {
     val init = object {
         var multiplication: Double = 2.0
         var photonFreePath: Double = 100.0
@@ -159,7 +181,8 @@ fun getAtmosphere(cmd: CommandLine): SimpleAtmosphere {
         init.photonFreePath,
         init.cellLength,
         init.cloudSize,
-        init.fieldMagnitude
+        init.fieldMagnitude,
+        rng
     )
 }
 
@@ -184,4 +207,35 @@ fun getRandomGenerator(cmd: CommandLine): RandomGenerator {
         }
     }
     return SynchronizedRandomGenerator(JDKRandomGenerator())
+}
+
+fun getSeed(cmd: CommandLine, atmosphere: SimpleAtmosphere) : List<Particle>{
+    if (cmd.hasOption("seed-photons")) {
+        try {
+            val path = Paths.get(cmd.getOptionValue("seed-photons"))
+            val text = path.toFile().readText().split("\n")
+            return text.map {
+                val temp = it.split(" ")
+                if(temp.size < 7){
+                    error("Bad format of input file with seed photons")
+                }
+                val position = Vector3D(temp[0].toDouble(), temp[1].toDouble(), temp[2].toDouble())
+                val direction = Vector3D(temp[3].toDouble(), temp[4].toDouble(), temp[5].toDouble())
+                val energy = temp[6].toDouble()
+                val number : Int
+                if (temp.size == 7){
+                    number = 1
+                }
+                else{
+                    number = temp[7].toInt()
+                }
+                List(number){
+                    Photon(position, direction, energy)
+                }
+            }.reduce { acc, list ->  acc + list}
+        } catch (exp: Exception) {
+            parseError(exp, "Options seed-photons can't be equal ${cmd.getOptionValue("seed-photons")} or input file have bad format\n")
+        }
+    }
+    return listOf(Photon(Vector3D(0.0, 0.0, atmosphere.cloudSize / 2), Vector3D(0.0, 0.0, -1.0), 1.0))
 }

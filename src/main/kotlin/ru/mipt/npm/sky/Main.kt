@@ -11,7 +11,6 @@ import org.apache.commons.cli.HelpFormatter
 import org.apache.commons.cli.ParseException
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D
 import java.io.FileNotFoundException
-import java.nio.file.Path
 import java.nio.file.Paths
 
 const val programmName = "skysim"
@@ -41,13 +40,7 @@ fun main(args: Array<String>) {
 
 }
 
-fun runToFile(flow: Flow<Collection<Particle>>, outPath : Path, limit : Int){
-
-
-
-}
-
-fun starComputatuon(flow: Flow<Collection<Particle>>,collector : ( index: Int, generation: Collection<Particle>) -> Unit, limit: Int){
+fun startComputation(flow: Flow<Collection<Particle>>, collector : (index: Int, generation: Collection<Particle>) -> Unit, limit: Int){
     runBlocking {
         var i = 1;
         flow.onEach {generation->
@@ -64,15 +57,14 @@ fun starComputatuon(flow: Flow<Collection<Particle>>,collector : ( index: Int, g
 }
 
 fun temp2(cmd : CommandLine){
-    val atmosphere = getAtmosphere(cmd)
-    val limit = getLimitOfPhotons(cmd)
     val generator = getRandomGenerator(cmd)
+    val atmosphere = getAtmosphere(cmd, generator)
+    val limit = getLimitOfPhotons(cmd)
 
-    val seed = Photon(Vector3D(0.0, 0.0, atmosphere.cloudSize / 2), Vector3D(0.0, 0.0, -1.0), 1.0)
+    val seed = getSeed(cmd, atmosphere)
+
     val flow = atmosphere.generate(generator, seed)
-
     val collector : ( index: Int, generation: Collection<Particle>) -> Unit
-
     if (cmd.hasOption("o")){
         try{
             val path = Paths.get(cmd.getOptionValue("o"))
@@ -82,7 +74,7 @@ fun temp2(cmd : CommandLine){
                 val height = generation.map { it.origin.z }.average()
                 writer.println("%10d %7d %7.2f".format(indx, generation.size, height))
             }
-            starComputatuon(flow,collector,limit)
+            startComputation(flow,collector,limit)
             writer.close()
         }
         catch (exp: FileNotFoundException){
@@ -94,7 +86,7 @@ fun temp2(cmd : CommandLine){
             val height = generation.map { it.origin.z }.average()
             println("There are ${generation.size} photons in generation $indx. Average height is $height")
         }
-        starComputatuon(flow,collector,limit)
+        startComputation(flow,collector,limit)
     }
 
 
