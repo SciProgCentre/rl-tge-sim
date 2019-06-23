@@ -7,7 +7,9 @@ import java.io.File
 import kotlin.math.PI
 import kotlin.math.sin
 
-fun plot() {
+
+
+fun saveFig() {
     val x = (0..100).map { it.toDouble() / 100.0 }
     val y = x.map { sin(2.0 * PI * it) }
 
@@ -26,6 +28,5 @@ fun plot() {
             }
         }
     }
-//File("Test.png")
-    plot.makeFile()
+    plot.makeFile(File("Test.html"), show = false)
 }

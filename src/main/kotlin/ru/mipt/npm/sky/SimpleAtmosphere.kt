@@ -29,7 +29,7 @@ class SimpleAtmosphere(
     val cellLength: Double = 100.0,
     val cloudSize: Double = 1000.0,
     val fieldMagnitude: Double = 0.2,
-    override val rng: RandomGenerator = defaultGenerator
+    rng: RandomGenerator = defaultGenerator
 ) : Atmosphere {
     override val field: Field = RandomField(rng, fieldMagnitude, cloudSize)
 

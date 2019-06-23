@@ -39,7 +39,6 @@ interface Field {
 
 interface Atmosphere {
     val field: Field
-    val rng : RandomGenerator
 
     fun Photon.interactionPoint(rng: RandomGenerator = defaultGenerator): Vector3D
 
