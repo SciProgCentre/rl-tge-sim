@@ -4,7 +4,7 @@ syntax: glob
 !gradle-wrapper.jar
 .gradletasknamecache
 
-/.gradle/
-/build/
-/out/
+.gradle/
+build/
+out/
 .idea
