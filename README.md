@@ -1,6 +1,6 @@
 # Reactor like TGE model: proof of concept
 
-## 
+## Description
 For fast checking the potential of RL-TGE model, we considered a next simplified model:  
 * There is only one tuning parameter --- the local coefficient of gamma multiplication, describing state of the atmosphere (field strength and distribution as well as density);
 * The number of produced of photons in a cell follows Poisson distribution, direction of momentum of a generated gamma is defined by the electric field direction;

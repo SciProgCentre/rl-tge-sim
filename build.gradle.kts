@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins{
     kotlin("jvm") version "1.3.40"
     application
+    idea
 }
 
 
@@ -15,6 +16,8 @@ application {
 
 repositories {
     mavenCentral()
+    maven("https://dl.bintray.com/mipt-npm/scientifik/")
+    maven("https://dl.bintray.com/mipt-npm/dataforge")
 }
 
 dependencies {
@@ -22,6 +25,10 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.2.1")
     implementation("org.apache.commons:commons-math3:3.6.1")
     compile("commons-cli","commons-cli",  "1.4")
+    compile("scientifik","plotlykt-core", "0.1.1")
+    testImplementation(
+        "junit:junit:4.12"
+    )
 }
 
 

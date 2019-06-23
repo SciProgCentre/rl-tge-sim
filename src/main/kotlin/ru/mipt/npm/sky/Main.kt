@@ -29,7 +29,7 @@ fun main(args: Array<String>) {
             println("Current version: $version")
             return
         }
-
+//plot()
         application(cmd)
 
     } catch (exp: ParseException) {
