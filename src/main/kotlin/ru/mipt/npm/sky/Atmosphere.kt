@@ -83,9 +83,9 @@ fun Atmosphere.nextGeneration(
 /**
  * Generate a flow of particle generations
  */
-fun Atmosphere.generate(rng: RandomGenerator, seed: Particle): Flow<Collection<Particle>> {
+fun Atmosphere.generate(rng: RandomGenerator, seed: Collection<Particle>): Flow<Collection<Particle>> {
     return flow {
-        var currentGeneration: Collection<Particle> = listOf(seed)
+        var currentGeneration: Collection<Particle> = seed
         while (!currentGeneration.isEmpty()) {
             emit(currentGeneration)
             currentGeneration = nextGeneration(rng, currentGeneration)
