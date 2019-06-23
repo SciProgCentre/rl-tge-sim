@@ -1,6 +1,7 @@
 # Reactor like TGE model: proof of concept
 
 ## Description
+
 For fast checking the potential of RL-TGE model, we considered a next simplified model:  
 
 * There is only one tuning parameter --- the local coefficient of gamma multiplication, describing state of the atmosphere (field strength and distribution as well as density);
@@ -24,7 +25,7 @@ For fast checking the potential of RL-TGE model, we considered a next simplified
 3. Open terminal and go to the folder with source.
 
 4. Compile program with gradle wrapper:
-    * For Windwos 
+    * For Windwos ``
     * For *nix use`chmod +x gradlew && ./gradlew installDist`
     
    or compile program using [Gradle build tools](https://gradle.org/)
@@ -33,17 +34,17 @@ We could find the installed program in `./build/install/skysim/bin`
 
 ## Usage
 
-Print help:
+For getting all options, print help:
 
-* For *nix: `./build/install/skysim/bin/skysim --help`
+* For *nix: `skysim --help`
 * For Windwos: `TODO`
     
-Help:
 ```
 usage: skysim
     --cell-length <NUMBER>       set the length of acceleration cell
                                  (influence on birth point of new photon)
     --cloud-size <NUMBER>        set the cloud size
+    --dynamic-plot               start server with dynamic plot
     --field-magnitude <NUMBER>   set the field magnitude
     --free-path <NUMBER>         set the photon free mean path
  -g,--gain <NUMBER>              set the local coefficient of gamma
@@ -53,6 +54,8 @@ usage: skysim
  -o,--output <FILENAME>          print simulation result in the file with
                                  given name
  -s,--seed <NUMBER>              set the random generator seed
+    --save-plot <FILENAME>       save graph of simulation result in the
+                                 html-file with given name
     --seed-photons <FILENAME>    set the path to file contains list of
                                  seed photons in next format:
                                  POSITION_X POSITION_Y POSITION_Z
@@ -65,5 +68,22 @@ usage: skysim
                                  by default using:
                                  0.0 0.0 cloud-size/2 0.0 0.0 -1.0 1.0 1
  -v,--version                    print information about version and exit
+```
+
+For start the animated plot:
 
 ```
+skysim --dynamic-plot
+```
+
+For saving the result in file:
+
+```
+skysim -o filename.txt
+```
+For saving the graph in html:
+
+```
+skysim --save-plot plot.html
+```
+

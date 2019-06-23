@@ -8,7 +8,9 @@ import org.apache.commons.math3.geometry.euclidean.threed.Vector3D
 import org.apache.commons.math3.random.JDKRandomGenerator
 import org.apache.commons.math3.random.RandomGenerator
 import org.apache.commons.math3.random.SynchronizedRandomGenerator
+import java.io.BufferedWriter
 import java.lang.Exception
+import java.nio.file.Files
 import java.nio.file.Paths
 import kotlin.system.exitProcess
 
@@ -260,4 +262,25 @@ fun getSeed(cmd: CommandLine, atmosphere: SimpleAtmosphere) : List<Particle>{
         }
     }
     return listOf(Photon(Vector3D(0.0, 0.0, atmosphere.cloudSize / 2), Vector3D(0.0, 0.0, -1.0), 1.0))
+}
+
+fun getWriter(cmd: CommandLine) : (index: Int, generation: Collection<Particle>)-> Unit {
+    val writer: BufferedWriter
+    val template : (Int, Int, Double) -> String
+    if (cmd.hasOption("o")){
+        val path = Paths.get(cmd.getOptionValue("o")).toFile()
+        writer = path.bufferedWriter()
+        writer.write("%10s %7s %7s".format("generation", "number", "height\n"))
+        template = { i: Int, i1: Int, d: Double -> "%10d %7d %7.2f\n".format(i,i1,d)}
+    }
+    else{
+        writer = System.out.bufferedWriter()
+        template = { i: Int, i1: Int, d: Double -> "There are $i1 photons in generation $i . Average height is $d\n"}
+    }
+    return { index: Int, generation: Collection<Particle> ->
+        val height = generation.map { it.origin.z }.average()
+        writer.write(template(index, generation.size, height))
+        writer.newLine()
+        writer.flush()
+    }
 }
