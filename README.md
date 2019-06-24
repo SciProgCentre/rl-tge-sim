@@ -15,7 +15,7 @@ For fast checking the potential of RL-TGE model, we considered a next simplified
 
 ## Installation
 
-1. Install JDK one way:
+1. Install JDK (8 or higher) one way:
     * From [official Oracle site](https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html);
     * Using your packege manager (for exemple, in Debian/Ubuntu use `sudo apt-get install openjdk-8-jdk
 `);
@@ -73,7 +73,7 @@ usage: skysim
 For start the animated plot:
 
 ```
-skysim --dynamic-plot
+skysim --dynamic-plot --gain=1.6 -l=100000 --seed-photons seed.txt
 ```
 
 For saving the result in file:
