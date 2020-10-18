@@ -54,6 +54,10 @@ fun Flow<Generation>.plotGenerationSizeIn(trace: Trace): Flow<Generation> = onEa
     trace.y.numbers += generation.particles.size
 }
 
+/**
+ *
+ * @param maxParticles shows the maximum number of randomly selected particles in the plot
+ */
 @OptIn(ExperimentalTime::class)
 fun Flow<Generation>.plotXZIn(
     scatter: Scatter,

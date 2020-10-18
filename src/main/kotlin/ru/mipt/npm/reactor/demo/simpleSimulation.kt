@@ -1,8 +1,6 @@
 package ru.mipt.npm.reactor.demo
 
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.runBlocking
 import kotlinx.html.hr
 import kscience.plotly.Plotly
@@ -56,9 +54,6 @@ fun main() {
             .limit(limit)
             .plotGenerationSizeIn(generationTrace)
             .plotXZIn(distributionTrace)
-            .onEach {
-                delay(300)
-            }
             .launchIn(this)
 
         Plotly.show(this) { renderer ->
