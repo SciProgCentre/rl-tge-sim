@@ -1,18 +1,25 @@
 package ru.mipt.npm.reactor.demo
 
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.takeWhile
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.html.hr
+import kscience.plotly.Plotly
+import kscience.plotly.layout
+import kscience.plotly.models.Scatter
+import kscience.plotly.models.ScatterMode
+import kscience.plotly.plot
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D
 import org.apache.commons.math3.random.JDKRandomGenerator
 import org.apache.commons.math3.random.SynchronizedRandomGenerator
+import ru.mipt.npm.reactor.limit
 import ru.mipt.npm.reactor.model.Photon
 import ru.mipt.npm.reactor.model.SimpleAtmosphere
 import ru.mipt.npm.reactor.model.generate
-import ru.mipt.npm.reactor.plotGenerations
-import ru.mipt.npm.reactor.showDynamic
+import ru.mipt.npm.reactor.plotGenerationSizeIn
+import ru.mipt.npm.reactor.plotXZIn
+import ru.mipt.npm.reactor.show
 
 fun main() {
     val generator = SynchronizedRandomGenerator(JDKRandomGenerator(11123))
@@ -35,20 +42,53 @@ fun main() {
     val limit = 1e6.toInt()
     val seed = listOf(Photon(Vector3D(0.0, 0.0, atmosphere.cloudSize / 2), Vector3D(0.0, 0.0, -1.0), 1.0))
 
-    runBlocking {
-        val engine = atmosphere.generate(generator, seed).onEach { generation ->
-            println("Finished generation ${generation.index} with ${generation.particles.size} particles")
-            if (generation.particles.isEmpty()) {
-                println("No photons it the generation. Finishing.")
-            } else if (generation.particles.size > limit) {
-                println("Generation size is too large. Finishing")
-            }
-        }.takeWhile { it.particles.size in (1..limit) }.plotGenerations(this).showDynamic(this)
+    val generationTrace = Scatter {
+        mode = ScatterMode.`lines+markers`
+    }
 
-        launch(Dispatchers.IO) {
-            //stop condition for plotly server
-            readLine()
-            engine.stop(1000, 1000)
+    val distributionTrace = Scatter{
+        mode = ScatterMode.markers
+    }
+
+
+    runBlocking {
+        atmosphere.generate(generator, seed)
+            .limit(limit)
+            .plotGenerationSizeIn(generationTrace)
+            .plotXZIn(distributionTrace)
+            .onEach {
+                delay(300)
+            }
+            .launchIn(this)
+
+        Plotly.show(this) { renderer ->
+            plot(renderer = renderer){
+                traces(generationTrace)
+                layout {
+                    title = "Generation size"
+                    xaxis {
+                        title = "Generation number"
+                    }
+                    yaxis {
+                        title = "Number of photons"
+                    }
+                }
+            }
+            hr()
+            plot(renderer = renderer){
+                traces(distributionTrace)
+                layout {
+                    title = "XZ distribution"
+                    xaxis {
+                        title = "X"
+                        range = -cloudSize/2 .. cloudSize/2
+                    }
+                    yaxis {
+                        title = "Z"
+                        range = -cloudSize/2 .. cloudSize/2
+                    }
+                }
+            }
         }
     }
 }

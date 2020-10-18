@@ -1,10 +1,14 @@
 package ru.mipt.npm.reactor
 
 
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.takeWhile
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.runBlocking
+import kscience.plotly.Plotly
+import kscience.plotly.layout
 import kscience.plotly.makeFile
+import kscience.plotly.models.Scatter
+import kscience.plotly.plot
 import org.apache.commons.cli.DefaultParser
 import org.apache.commons.cli.HelpFormatter
 import org.apache.commons.cli.ParseException
@@ -34,33 +38,41 @@ fun main(args: Array<String>) {
         val limit = getLimitOfPhotons(cmd)
         val seed = getSeed(cmd, atmosphere)
 
-        val plot = GlobalScope.async {
-            val plot = atmosphere.generate(generator, seed).onEach { generation ->
-                if (generation.particles.isEmpty()) {
-                    println("No photons it the generation. Finishing.")
-                } else if (generation.particles.size > limit) {
-                    println("Generation size is too large. Finishing")
+        val trace = Scatter {
+            name = "Generation size"
+        }
+
+        val plot = Plotly.plot {
+            traces(trace)
+            layout {
+                title = "Reactor like TGE"
+                xaxis {
+                    title = "Generation number"
                 }
-            }.takeWhile { it.particles.size in (1..limit) }
+                yaxis {
+                    title = "Number of photons"
+                }
+            }
+        }
+
+        runBlocking {
+            atmosphere.generate(generator, seed)
+                .limit(limit)
                 .withLogging(cmd)
-                .plotGenerations(this)
+                .plotGenerationSizeIn(trace)
+                .onCompletion {
+                    if (cmd.hasOption("save-plot")) {
+                        val file = File(cmd.getOptionValue("save-plot"))
+                        plot.makeFile(file.toPath())
+                    }
+                }
+                .launchIn(this)
 
 
             if (cmd.hasOption("dynamic-plot")) {
-                val engine = plot.showDynamic(this)
-                launch(Dispatchers.IO) {
-                    //stop condition for plotly server
-                    readLine()
-                    engine.stop(1000, 1000)
+                Plotly.show(this) { renderer ->
+                    plot(plot, renderer = renderer)
                 }
-            }
-            plot
-        }
-
-        if (cmd.hasOption("save-plot")) {
-            val file = File(cmd.getOptionValue("save-plot"))
-            runBlocking {
-                plot.await().makeFile(file.toPath())
             }
         }
 
