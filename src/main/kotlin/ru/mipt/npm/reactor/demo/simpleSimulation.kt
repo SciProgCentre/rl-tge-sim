@@ -12,21 +12,24 @@ import org.apache.commons.math3.geometry.euclidean.threed.Vector3D
 import org.apache.commons.math3.random.JDKRandomGenerator
 import org.apache.commons.math3.random.SynchronizedRandomGenerator
 import ru.mipt.npm.reactor.limit
+import ru.mipt.npm.reactor.model.Particle
 import ru.mipt.npm.reactor.model.Photon
 import ru.mipt.npm.reactor.model.SimpleAtmosphere
 import ru.mipt.npm.reactor.model.generate
 import ru.mipt.npm.reactor.plotGenerationSizeIn
 import ru.mipt.npm.reactor.plotXZIn
 import ru.mipt.npm.reactor.show
+import java.util.*
 
 fun main() {
     val generator = SynchronizedRandomGenerator(JDKRandomGenerator(11123))
 
     val multiplication: Double = 2.0
     val photonFreePath: Double = 100.0
-    val cellLength: Double = 100.0
-    val cloudSize: Double = 1000.0
+    val cellLength: Double = 250.0
+    val cloudSize: Double = 1300.0
     val fieldMagnitude: Double = 0.2
+    val initialParticles = 100
 
     val atmosphere = SimpleAtmosphere(
         multiplication,
@@ -38,7 +41,7 @@ fun main() {
     )
 
     val limit = 1e6.toInt()
-    val seed = listOf(Photon(Vector3D(0.0, 0.0, atmosphere.cloudSize / 2), Vector3D(0.0, 0.0, -1.0), 1.0))
+    val seed: List<Particle> = Collections.nCopies(initialParticles, Photon(Vector3D(0.0, 0.0, atmosphere.cloudSize / 2), Vector3D(0.0, 0.0, -1.0), 1.0))
 
     val generationTrace = Scatter {
         mode = ScatterMode.`lines+markers`
