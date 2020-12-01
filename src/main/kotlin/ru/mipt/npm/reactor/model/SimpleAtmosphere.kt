@@ -26,7 +26,7 @@ class RandomField(generator: RandomGenerator, val magnitude: Double, val size: D
 class SimpleAtmosphere(
     val multiplication: Double = 2.0,
     val photonFreePath: Double = 100.0,
-    val cellLength: Double = 100.0,
+    val cellLength: Double = 300.0,
     val cloudSize: Double = 1000.0,
     val fieldMagnitude: Double = 0.2,
     rng: RandomGenerator = defaultGenerator
@@ -43,7 +43,14 @@ class SimpleAtmosphere(
      * Specifies if an electron produced in specific point with given direction and energy ignites the cell
      */
     private fun Electron.ignites(): Boolean {
-        return Vector3D.angle(direction, field(origin)) < 2 * Math.PI / 3;
+        return true
+        //return Vector3D.angle(direction, field(origin)) < 2 * Math.PI / 3;
+    }
+
+
+    override fun Photon.convert(rng: RandomGenerator, point: Vector3D): Electron {
+        //keep the same generation as for Photon
+        return Electron(point, direction, energy, generation)
     }
 
     override fun Electron.accelerate(rng: RandomGenerator, point: Vector3D): List<Particle> {
@@ -69,10 +76,6 @@ class SimpleAtmosphere(
         }
     }
 
-    override fun Photon.convert(rng: RandomGenerator, point: Vector3D): Electron {
-        //keep the same generation as for Photon
-        return Electron(point, direction, energy, generation)
-    }
 
 }
 

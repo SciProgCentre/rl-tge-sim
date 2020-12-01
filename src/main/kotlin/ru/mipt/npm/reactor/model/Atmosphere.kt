@@ -40,13 +40,10 @@ interface Field {
 interface Atmosphere {
     val field: Field
 
-    fun Photon.interactionPoint(rng: RandomGenerator = defaultGenerator): Vector3D
-
     /**
-     * Simulate acceleration of an electron inside the cell
-     * @param point optional point of interaction of electron with cell. By default use point of origin
+     * Compute the interaction point of the photon
      */
-    fun Electron.accelerate(rng: RandomGenerator, point: Vector3D = origin): Collection<Particle>
+    fun Photon.interactionPoint(rng: RandomGenerator = defaultGenerator): Vector3D
 
     /**
      * Convert a photon into electron via photo-effect, compton or other mechanism
@@ -54,7 +51,14 @@ interface Atmosphere {
      */
     fun Photon.convert(rng: RandomGenerator, point: Vector3D): Electron
 
-    fun Photon.ignite(rng: RandomGenerator, point: Vector3D = interactionPoint(rng)): Collection<Particle> {
+
+    /**
+     * Simulate acceleration of an electron inside the cell
+     * @param point optional point of interaction of electron with cell. By default use point of origin
+     */
+    fun Electron.accelerate(rng: RandomGenerator, point: Vector3D = origin): Collection<Particle>
+
+    fun Photon.ignite(rng: RandomGenerator, point: Vector3D): Collection<Particle> {
         val electron = convert(rng, point)
         return if (field.inField(electron.origin)) {
             electron.accelerate(rng = rng)
@@ -74,7 +78,10 @@ fun Atmosphere.nextGeneration(
 ): Collection<Particle> {
     return particles.stream().parallel().flatMap { particle ->
         when (particle) {
-            is Photon -> particle.ignite(rng).stream()
+            is Photon -> {
+                val interactionPoint = particle.interactionPoint(rng)
+                particle.ignite(rng, interactionPoint).stream()
+            }
             is Electron -> particle.accelerate(rng).stream()
         }
     }.toList()

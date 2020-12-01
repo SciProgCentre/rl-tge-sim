@@ -1,16 +1,16 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.4.10"
+    kotlin("jvm") version "1.4.20"
     application
 }
 
 
 group = "ru.mipt.npm.sky"
-version = "1.0-SNAPSHOT"
+version = "1.0.0"
 
 application {
-    mainClassName = "ru.mipt.npm.reactor.MainKt"
+    mainClass.set("ru.mipt.npm.reactor.MainKt")
 }
 
 repositories {
@@ -23,10 +23,10 @@ repositories {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.9")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.0")
     implementation("org.apache.commons:commons-math3:3.6.1")
     implementation("commons-cli", "commons-cli", "1.4")
-    implementation("kscience.plotlykt", "plotlykt-server", "0.2.0")
+    implementation("kscience.plotlykt", "plotlykt-server", "0.3.0")
     testImplementation("junit:junit:4.12")
 }
 
