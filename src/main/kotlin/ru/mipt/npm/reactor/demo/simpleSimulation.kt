@@ -27,7 +27,7 @@ fun main() {
     val multiplication: Double = 1.5
     val photonFreePath: Double = 100.0
     val cellLength: Double = 300.0
-    val cloudSize: Double = 1300.0
+    val cloudSize: Double = 1200.0
     val fieldMagnitude: Double = 0.2
     val initialParticles = 100
 
