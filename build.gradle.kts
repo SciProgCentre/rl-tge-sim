@@ -22,12 +22,20 @@ dependencies {
     implementation("org.apache.commons:commons-math3:3.6.1")
     implementation("commons-cli", "commons-cli", "1.4")
     implementation("space.kscience", "plotlykt-server", "0.4.2")
+    implementation("ch.qos.logback:logback-classic:1.2.5")
     testImplementation("junit:junit:4.12")
 }
+
 
 
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         jvmTarget = "11"
     }
+}
+
+val simpleSimulation by tasks.creating(JavaExec::class){
+    group = "run"
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("ru.mipt.npm.reactor.demo.SimpleSimulationKt")
 }
