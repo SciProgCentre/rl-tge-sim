@@ -15,11 +15,6 @@ application {
 
 repositories {
     mavenCentral()
-    jcenter()
-    maven("https://kotlin.bintray.com/kotlinx")
-    maven("https://dl.bintray.com/mipt-npm/kscience")
-    maven("https://dl.bintray.com/mipt-npm/dataforge")
-    maven("https://dl.bintray.com/mipt-npm/dev")
 }
 
 dependencies {
