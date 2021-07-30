@@ -1,13 +1,9 @@
 package ru.mipt.npm.reactor.demo
 
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.runBlocking
 import kotlinx.html.hr
-import kscience.plotly.Plotly
-import kscience.plotly.layout
-import kscience.plotly.models.Scatter
-import kscience.plotly.models.ScatterMode
-import kscience.plotly.plot
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D
 import org.apache.commons.math3.random.JDKRandomGenerator
 import org.apache.commons.math3.random.SynchronizedRandomGenerator
@@ -19,6 +15,11 @@ import ru.mipt.npm.reactor.model.generate
 import ru.mipt.npm.reactor.plotGenerationSizeIn
 import ru.mipt.npm.reactor.plotXZIn
 import ru.mipt.npm.reactor.show
+import space.kscience.plotly.Plotly
+import space.kscience.plotly.layout
+import space.kscience.plotly.models.Scatter
+import space.kscience.plotly.models.ScatterMode
+import space.kscience.plotly.plot
 import java.util.*
 
 fun main() {
@@ -27,7 +28,7 @@ fun main() {
     val multiplication: Double = 1.5
     val photonFreePath: Double = 100.0
     val cellLength: Double = 300.0
-    val cloudSize: Double = 1200.0
+    val cloudSize: Double = 1250.0
     val fieldMagnitude: Double = 0.2
     val initialParticles = 100
 
@@ -56,6 +57,9 @@ fun main() {
         atmosphere.generate(generator, seed)
             .limit(limit)
             .plotGenerationSizeIn(generationTrace)
+            .onEach {
+                println("${it.index}\t${it.particles.size}")
+            }
             .plotXZIn(distributionTrace)
             .launchIn(this)
 
@@ -63,12 +67,11 @@ fun main() {
             plot(renderer = renderer){
                 traces(generationTrace)
                 layout {
-                    title = "Generation size"
                     xaxis {
                         title = "Generation number"
                     }
                     yaxis {
-                        title = "Number of photons"
+                        title = "Number of photons per generation"
                     }
                 }
             }

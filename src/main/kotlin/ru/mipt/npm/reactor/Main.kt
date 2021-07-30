@@ -4,15 +4,15 @@ package ru.mipt.npm.reactor
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.runBlocking
-import kscience.plotly.Plotly
-import kscience.plotly.layout
-import kscience.plotly.makeFile
-import kscience.plotly.models.Scatter
-import kscience.plotly.plot
 import org.apache.commons.cli.DefaultParser
 import org.apache.commons.cli.HelpFormatter
 import org.apache.commons.cli.ParseException
 import ru.mipt.npm.reactor.model.generate
+import space.kscience.plotly.Plotly
+import space.kscience.plotly.layout
+import space.kscience.plotly.makeFile
+import space.kscience.plotly.models.Scatter
+import space.kscience.plotly.plot
 import java.io.File
 
 

@@ -8,20 +8,19 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.html.FlowContent
-import kscience.plotly.Plot
-import kscience.plotly.Plotly
-import kscience.plotly.PlotlyRenderer
-import kscience.plotly.layout
-import kscience.plotly.models.Scatter
-import kscience.plotly.models.Trace
-import kscience.plotly.server.PlotlyUpdateMode
-import kscience.plotly.server.serve
-import kscience.plotly.server.show
 import ru.mipt.npm.reactor.model.Generation
+import space.kscience.plotly.Plot
+import space.kscience.plotly.Plotly
+import space.kscience.plotly.PlotlyRenderer
+import space.kscience.plotly.layout
+import space.kscience.plotly.models.Scatter
+import space.kscience.plotly.models.Trace
+import space.kscience.plotly.server.PlotlyUpdateMode
+import space.kscience.plotly.server.serve
+import space.kscience.plotly.server.show
 import java.lang.Integer.min
 import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
-import kotlin.time.milliseconds
 
 
 fun Flow<Generation>.plotGenerations(scope: CoroutineScope): Plot {
@@ -62,13 +61,13 @@ fun Flow<Generation>.plotGenerationSizeIn(trace: Trace): Flow<Generation> = onEa
 fun Flow<Generation>.plotXZIn(
     scatter: Scatter,
     maxParticles: Int = 500,
-    delay: Duration = 300.milliseconds,
+    delay: Duration = Duration.milliseconds(300),
 ): Flow<Generation> = onEach { generation ->
     if (!generation.particles.isEmpty()) {
         val selectedParticles = List(min(generation.particles.size, maxParticles)) { generation.particles.random() }
         scatter.x.set(selectedParticles.map { it.origin.x })
         scatter.y.set(selectedParticles.map { it.origin.z })
-        delay(delay)
+        delay(delay.inWholeMilliseconds)
     }
 }
 
